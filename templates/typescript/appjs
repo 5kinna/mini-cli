@@ -1,0 +1,10 @@
+//app.ts
+export interface IMyApp {
+}
+
+App<IMyApp>({
+  onLaunch() {
+  },
+  globalData: {
+  }
+})
