@@ -12,7 +12,7 @@ program
   .parse(process.argv)
 
 const args = program.args
-const { template, description, appId,name, css } = program
+const { description, appId,name, css } = program
 let typescript
 
 /**
