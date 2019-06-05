@@ -3,6 +3,7 @@ const fs =require('fs-extra')
 const chalk =require('chalk')
 const inquirer =require('inquirer')
 const semver =require('semver')
+
 const CONFIG =require('./conf')
 const Creator = require('./creator')
 module.exports=class Project extends Creator{
