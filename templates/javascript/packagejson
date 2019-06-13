@@ -6,14 +6,20 @@
   "description":"<%= description %>",
   "license": "MIT",
   "scripts": {
-    "dev": "parcel src/app.js",
-    "build": "parcel build src/app.js"
+    "dev": "cross-env NODE_ENV=dev gulp serve",
+    "build": "cross-env NODE_ENV=production gulp build"
   },
   "dependencies": {
-    "parcel-bundler": "1.11.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.4.5",
-    "@babel/plugin-transform-runtime": "^7.4.4"
+    "chalk": "^2.4.2",
+    "cross-env": "^5.2.0",
+    "gulp": "^4.0.2",
+    "gulp-clean-css": "^4.2.0",
+    "gulp-htmlmin": "^5.0.1",
+    "gulp-if": "^2.0.2",
+    "gulp-imagemin": "^6.0.0",
+    "gulp-jsonminify": "^1.1.0",
+    "gulp-uglify-es": "^1.0.4"
   }
 }

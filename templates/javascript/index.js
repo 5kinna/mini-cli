@@ -33,6 +33,9 @@ module.exports = function(creater, params, cb) {
   fs.ensureDirSync(projectPath)
   fs.ensureDirSync(sourceDir)
   fs.ensureDirSync(path.join(sourceDir, 'pages'))
+  fs.ensureDirSync(path.join(sourceDir, 'images'))
+  fs.ensureDirSync(path.join(sourceDir, 'utils'))
+  fs.ensureDirSync(path.join(sourceDir, css || 'css'))
 
   switch (css) {
     case 'sass':
@@ -63,6 +66,11 @@ module.exports = function(creater, params, cb) {
   creater.template(template, 'appjs', path.join(sourceDir, 'app.js'))
   creater.template(
     template,
+    'runtimejs',
+    path.join(sourceDir, 'utils', 'runtime.js')
+  )
+  creater.template(
+    template,
     'projectjs',
     path.join(sourceDir, 'project.config.json'),
     {
@@ -70,7 +78,7 @@ module.exports = function(creater, params, cb) {
       appId
     }
   )
-  creater.template(template, 'json', path.join(sourceDir, 'app.json'), {
+  creater.template(template, 'appjson', path.join(sourceDir, 'app.json'), {
     projectName
   })
   creater.template(
@@ -101,6 +109,15 @@ module.exports = function(creater, params, cb) {
     {
       description,
       projectName
+    }
+  )
+  creater.template(
+    template,
+    'gulpfile',
+    path.join(projectPath, 'gulpfile.js'),
+    {
+      css,
+      styleExtMap
     }
   )
 
@@ -159,7 +176,10 @@ module.exports = function(creater, params, cb) {
     console.log(`${chalk.green('✔ ')}${chalk.grey(`创建其他配置文件`)}`)
 
     // install
-    const command = `cd ${projectName} && npm i`
+    let command = `cd ${projectName} && npm i`
+    command += css
+      ? ` && npm i gulp-${css} -D && npm run build`
+      : ' && npm run build'
     const installSpinner = ora(
       `执行安装项目依赖 ${chalk.cyan.bold(command)}, 需要一会儿...`
     ).start()

@@ -1,0 +1,105 @@
+const gulp = require('gulp')
+const uglify = require('gulp-uglify-es').default
+const gulpif = require('gulp-if')
+const htmlmin = require('gulp-htmlmin')
+const jsonmin = require('gulp-jsonminify')
+const chalk = require('chalk')
+const spawn = require('child_process').spawn
+const path = require('path')
+const imagemin = require('gulp-imagemin')
+const fs = require('fs-extra')
+const cssclean = require('gulp-clean-css')
+
+const isNotDev = process.env.NODE_ENV !== 'dev'
+
+const <%=css%> = require(`gulp-<%=css%>`)
+
+// 处理wxml
+gulp.task('wxml', () =>
+  gulp
+    .src('src/**/*.wxml')
+    .pipe(
+      gulpif(
+        isNotDev,
+        htmlmin({
+          collapseWhitespace: true,
+          collapseBooleanAttributes: true,
+          removeComments: true,
+          removeEmptyAttributes: true,
+          removeScriptTypeAttributes: true,
+          removeStyleLinkTypeAttributes: true
+        })
+      )
+    )
+    .pipe(gulp.dest('dist'))
+)
+
+// 处理json
+gulp.task('json', () =>
+  gulp
+    .src('src/**/*.json')
+    .pipe(jsonmin())
+    .pipe(gulp.dest('dist'))
+)
+
+// 处理js
+gulp.task('js', () =>
+  gulp
+    .src('src/**/*.js')
+    .pipe(
+      gulpif(
+        isNotDev,
+        uglify({
+          compress: {
+            warnings: false,
+            drop_console: true,
+            drop_debugger: true
+          }
+        })
+      )
+    )
+    .pipe(gulp.dest('dist'))
+)
+
+// 图片
+gulp.task('img', () =>
+  gulp
+    .src('src/images/*.*')
+    .pipe(imagemin({ progressive: true }))
+    .pipe(gulp.dest('dist/images'))
+)
+
+// 样式
+gulp.task('style', () =>
+  gulp
+    .src(`src/**/*.<%=styleExtMap%>`)
+    .pipe(gulpif('<%=css%>'!=='css', <%=css%>()))
+    .pipe(cssclean())
+    .pipe(gulp.dest(`dist`))
+)
+
+// 监听
+gulp.task('watch', () => {
+  gulp.watch('src/**/*.wxml', gulp.parallel('wxml'))
+  gulp.watch('src/**/*.js', gulp.parallel('js'))
+  gulp.watch('src/**/*.json', gulp.parallel('json'))
+  gulp.watch('src/images/*.*', gulp.parallel('img'))
+})
+
+// 清空dist
+gulp.task('clean', () => spawn('rm', ['-rf', path.join(__dirname, 'dist')]))
+
+// 重新生成dist
+gulp.task('rebuild', gulp.parallel('wxml', 'js', 'json', 'img', 'style'))
+
+// 监听
+gulp.task('serve', gulp.series('clean', gulp.parallel('watch', 'rebuild')))
+
+// 构建
+gulp.task(
+  'build',
+  gulp.series('clean', 'rebuild', done => {
+    done()
+    console.log(chalk.green.bold('✔ 已构建完成dist文件!'))
+  })
+)
