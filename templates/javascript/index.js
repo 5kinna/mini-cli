@@ -135,7 +135,7 @@ module.exports = function(creater, params, cb) {
     'configjs',
     path.join(projectPath, 'config.js'),
     {
-      css
+      css:currentStyleExt
     }
   )
 
