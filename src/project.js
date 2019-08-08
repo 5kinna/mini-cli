@@ -4,7 +4,6 @@ const chalk =require('chalk')
 const inquirer =require('inquirer')
 const semver =require('semver')
 
-const CONFIG =require('./conf')
 const Creator = require('./creator')
 module.exports=class Project extends Creator{
   constructor (options) {
@@ -118,7 +117,7 @@ module.exports=class Project extends Creator{
     return inquirer.prompt(prompts)
   }
   writeTemplate(cb=()=>{}){
-    this.conf.src = CONFIG.SOURCE_DIR
+    this.conf.src = 'src'
     const templateCreate = require(path.join(this.templatePath(), this.conf.typescript?'typescript':'javascript', 'index.js'))
     templateCreate(this, this.conf, cb)
   }

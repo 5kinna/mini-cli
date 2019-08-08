@@ -1,0 +1,10 @@
+module.exports = {
+    devSrc: `example/`,
+    devProject: `src/project.config.test`,
+    prodSrc: `dist/`,
+    prodProject: `src/project.config.prod`,
+    wxmlSrc: `src/**/*.wxml`,
+    cssSrc: `src/**/*.<%=css%>`,
+    jsSrc: `src/**/*.js`,
+    copySrc: ['src/**', '!src/**/*.wxml', '!src/**/*.js', '!src/**/*.<%=css%>', '!src/project.config.*']
+}

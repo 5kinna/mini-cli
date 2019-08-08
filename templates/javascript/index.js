@@ -72,9 +72,18 @@ module.exports = function(creater, params, cb) {
   creater.template(
     template,
     'projectjs',
-    path.join(sourceDir, 'project.config.json'),
+    path.join(sourceDir, 'project.config.test'),
     {
-      projectName,
+      projectName:`${projectName}-test`,
+      appId
+    }
+  )
+  creater.template(
+    template,
+    'projectjs',
+    path.join(sourceDir, 'project.config.prod'),
+    {
+      projectName:`${projectName}-prod`,
       appId
     }
   )
@@ -101,6 +110,7 @@ module.exports = function(creater, params, cb) {
   )
 
   creater.template(template, 'nvmrc', path.join(projectPath, '.nvmrc'))
+  creater.template(template, 'postcssconfig', path.join(projectPath, 'postcss.config.js'))
   creater.template(template, 'babelrc', path.join(projectPath, '.babelrc'))
   creater.template(
     template,
@@ -114,18 +124,24 @@ module.exports = function(creater, params, cb) {
   creater.template(
     template,
     'gulpfile',
-    path.join(projectPath, 'gulpfile.js'),
+    path.join(projectPath, 'gulpfile.babel.js'),
     {
       css,
       styleExtMap
     }
   )
+  creater.template(
+    template,
+    'configjs',
+    path.join(projectPath, 'config.js'),
+    {
+      css
+    }
+  )
 
   creater.fs.commit(() => {
-    const chalkPath = typescript
-      ? `${projectName}/miniprogram/${src}`
-      : `${projectName}/${src}`
-    console.log()
+    const chalkPath = `${projectName}/${src}`
+
     console.log(
       `${chalk.green('✔ ')}${chalk.grey(
         `创建项目: ${chalk.grey.bold(projectName)}`
@@ -175,35 +191,16 @@ module.exports = function(creater, params, cb) {
     )
     console.log(`${chalk.green('✔ ')}${chalk.grey(`创建其他配置文件`)}`)
 
-    // install
-    let command = `cd ${projectName} && npm i`
-    command += css
-      ? ` && npm i gulp-${css} -D && npm run build`
-      : ' && npm run build'
-    const installSpinner = ora(
-      `执行安装项目依赖 ${chalk.cyan.bold(command)}, 需要一会儿...`
-    ).start()
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        installSpinner.color = 'red'
-        installSpinner.fail(chalk.red('安装项目依赖失败，请自行重新安装！'))
-        console.log(error)
-      } else {
-        installSpinner.color = 'green'
-        installSpinner.succeed('安装成功')
-        console.log(`${stderr}${stdout}`)
-      }
-      console.log(
-        chalk.green(`创建项目 ${chalk.green.bold(projectName)} 成功！`)
-      )
-      console.log(
-        chalk.green(
-          `请进入项目目录 ${chalk.green.bold(projectName)} 开始工作吧！😝`
-        )
-      )
-      if (typeof cb === 'function') {
-        cb()
-      }
-    })
+    console.log(
+      chalk.green(`✔ 创建项目 ${chalk.green.bold(projectName)} 成功！`)
+    )
+    console.log()
+    console.log(chalk.green(`请进入项目目录 ${chalk.green.bold(projectName)} `))
+    console.log(chalk.green(`安装依赖，可执行命令 npm i`))
+    console.log(chalk.green(`开始工作吧！😝`))
+
+    if (typeof cb === 'function') {
+      cb()
+    }
   })
 }

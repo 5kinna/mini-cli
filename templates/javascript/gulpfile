@@ -1,26 +1,30 @@
-const gulp = require('gulp')
-const uglify = require('gulp-uglify-es').default
-const gulpif = require('gulp-if')
-const htmlmin = require('gulp-htmlmin')
-const jsonmin = require('gulp-jsonminify')
-const chalk = require('chalk')
-const spawn = require('child_process').spawn
-const path = require('path')
-const imagemin = require('gulp-imagemin')
-const fs = require('fs-extra')
-const cssclean = require('gulp-clean-css')
+import path from 'path'
+import gulp from 'gulp'
+import babel from 'gulp-babel'
+import uglify from 'gulp-uglify-es'
+import <%=css%> from 'gulp-<%=css%>'
+import cleanCSS from 'gulp-clean-css'
+import rename from 'gulp-rename'
+import postcss from 'gulp-postcss'
+import del from 'del'
+import gulpif from 'gulp-if'
+import chalk from 'chalk'
+import paths from './config.js'
 
-const isNotDev = process.env.NODE_ENV !== 'dev'
+// 配置环境
+const ENV = process.env.NODE_ENV
+const isDev = ENV === 'development' || ENV === 'dev'
+const buildPath = path.join(__dirname, paths[`${ENV}Src`])
+const format = isDev ? 'beautify' : false
 
-const <%=css%> = require(`gulp-<%=css%>`)
+export const clean = () => del([buildPath])
 
-// 处理wxml
-gulp.task('wxml', () =>
+export const wxml = () => (
   gulp
-    .src('src/**/*.wxml')
+    .src(paths.wxmlSrc)
     .pipe(
       gulpif(
-        isNotDev,
+        !isDev,
         htmlmin({
           collapseWhitespace: true,
           collapseBooleanAttributes: true,
@@ -31,24 +35,27 @@ gulp.task('wxml', () =>
         })
       )
     )
-    .pipe(gulp.dest('dist'))
+    .pipe(gulp.dest(buildPath))
 )
 
-// 处理json
-gulp.task('json', () =>
+export const style = () => (
   gulp
-    .src('src/**/*.json')
-    .pipe(jsonmin())
-    .pipe(gulp.dest('dist'))
+    .src(paths.cssSrc)
+    .pipe(gulpif('<%=css%>'!=='css', <%=css%>()))
+    .pipe(postcss())
+    .pipe(cleanCSS({ format }))
+    .pipe(
+        rename((path) => (path.extname = '.wxss'))
+    )
+    .pipe(gulp.dest(buildPath))
 )
 
-// 处理js
-gulp.task('js', () =>
-  gulp
-    .src('src/**/*.js')
+export const js = () => (
+  gulp.src(paths.jsSrc)
+    .pipe(babel())
     .pipe(
       gulpif(
-        isNotDev,
+        !isDev,
         uglify({
           compress: {
             warnings: false,
@@ -58,48 +65,39 @@ gulp.task('js', () =>
         })
       )
     )
-    .pipe(gulp.dest('dist'))
+    .pipe(gulp.dest(buildPath))
 )
 
-// 图片
-gulp.task('img', () =>
+export const project = () => (
+  gulp.src(paths[`${ENV}Project`])
+    .pipe(gulp.dest(`${buildPath}/project.config.json`))
+)
+
+export const copy = () => (
   gulp
-    .src('src/images/*.*')
-    .pipe(imagemin({ progressive: true }))
-    .pipe(gulp.dest('dist/images'))
+    .src(paths.copySrc)
+    .pipe(gulp.dest(buildPath))
 )
 
-// 样式
-gulp.task('style', () =>
-  gulp
-    .src(`src/**/*.<%=styleExtMap%>`)
-    .pipe(gulpif('<%=css%>'!=='css', <%=css%>()))
-    .pipe(cssclean())
-    .pipe(gulp.dest(`dist`))
-)
+export const watch = () => {
+  gulp.watch(paths.wxmlSrc, wxml)
+  gulp.watch(paths.jsSrc, js)
+  gulp.watch(paths.cssSrc, style)
+  gulp.watch(paths.copySrc, copy)
+  gulp.watch(paths[`${ENV}Project`], project)
+}
 
-// 监听
-gulp.task('watch', () => {
-  gulp.watch('src/**/*.wxml', gulp.parallel('wxml'))
-  gulp.watch('src/**/*.js', gulp.parallel('js'))
-  gulp.watch('src/**/*.json', gulp.parallel('json'))
-  gulp.watch('src/images/*.*', gulp.parallel('img'))
+export default gulp.series(clean, gulp.parallel(copy, style, js, wxml, project), () => {
+  watch()
+  console.log(chalk.green.bold('✔ ✔ ✔ 已准备就绪~~~'))
 })
 
-// 清空dist
-gulp.task('clean', () => spawn('rm', ['-rf', path.join(__dirname, 'dist')]))
+export const build = gulp.series(clean, gulp.parallel(copy, style, js, wxml, project), done => {
+  done()
+  console.log(chalk.green.bold('✔ ✔ ✔ 正式环境已重构完成!!!'))
+})
 
-// 重新生成dist
-gulp.task('rebuild', gulp.parallel('wxml', 'js', 'json', 'img', 'style'))
-
-// 监听
-gulp.task('serve', gulp.series('clean', gulp.parallel('watch', 'rebuild')))
-
-// 构建
-gulp.task(
-  'build',
-  gulp.series('clean', 'rebuild', done => {
-    done()
-    console.log(chalk.green.bold('✔ 已构建完成dist文件!'))
-  })
-)
+export const test = gulp.series(clean, gulp.parallel(copy, style, js, wxml, project), done => {
+  done()
+  console.log(chalk.green.bold('✔ ✔ ✔ 测试环境已重构完成!!!'))
+})

@@ -6,20 +6,29 @@
   "description":"<%= description %>",
   "license": "MIT",
   "scripts": {
-    "dev": "cross-env NODE_ENV=dev gulp serve",
-    "build": "cross-env NODE_ENV=production gulp build"
+    "dev": "cross-env NODE_ENV=dev gulp",
+    "test": "cross-env NODE_ENV=dev gulp test",
+    "build": "cross-env NODE_ENV=prod gulp build"
   },
   "dependencies": {
   },
   "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/register": "^7.5.5",
+    "autoprefixer": "^9.6.1",
     "chalk": "^2.4.2",
     "cross-env": "^5.2.0",
+    "del": "^5.0.0",
     "gulp": "^4.0.2",
+    "gulp-babel": "^8.0.0",
     "gulp-clean-css": "^4.2.0",
     "gulp-htmlmin": "^5.0.1",
     "gulp-if": "^2.0.2",
-    "gulp-imagemin": "^6.0.0",
     "gulp-jsonminify": "^1.1.0",
+    "gulp-less": "^4.0.1",
+    "gulp-postcss": "^8.0.0",
+    "gulp-rename": "^1.4.0",
     "gulp-uglify-es": "^1.0.4"
   }
 }
