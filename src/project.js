@@ -87,7 +87,7 @@ module.exports=class Project extends Creator{
       prompts.push({
         type: 'confirm',
         name: 'typescript',
-        message: '是否需要使用 TypeScript ？'
+        message: '是否需要使用 TypeScript ？（目前暂不支持typescript）'
       })
     }
 
@@ -118,7 +118,7 @@ module.exports=class Project extends Creator{
   }
   writeTemplate(cb=()=>{}){
     this.conf.src = 'src'
-    const templateCreate = require(path.join(this.templatePath(), this.conf.typescript?'typescript':'javascript', 'index.js'))
+    const templateCreate = require(path.join(this.templatePath(), 'index.js'))
     templateCreate(this, this.conf, cb)
   }
 }

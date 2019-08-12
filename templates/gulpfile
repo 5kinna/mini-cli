@@ -10,8 +10,13 @@ import del from 'del'
 import gulpif from 'gulp-if'
 import chalk from 'chalk'
 import htmlmin from 'gulp-htmlmin'
+import preprocess from 'gulp-preprocess'
+<% if (typescript) { %>
+import ts from 'gulp-typescript'
+<% } %>
 
 import paths from './config.js'
+import context from './preprocess.config'
 
 // 配置环境
 const ENV = process.env.NODE_ENV
@@ -24,6 +29,7 @@ export const clean = () => del([buildPath])
 export const wxml = () => (
   gulp
     .src(paths.wxmlSrc)
+    .pipe(preprocess({context:context[ENV]}))
     .pipe(
       gulpif(
         !isDev,
@@ -52,6 +58,13 @@ export const style = () => (
 
 export const js = () => (
   gulp.src(paths.jsSrc)
+    .pipe(preprocess())
+    .pipe(
+      gulpif(<%=typescript%>,ts({
+            noImplicitAny: true,
+            outFile: 'output.js'
+        }))
+    )
     .pipe(babel())
     .pipe(
       gulpif(
@@ -65,18 +78,18 @@ export const js = () => (
         })
       )
     )
-    .pipe(gulp.dest(buildPath))
-)
-
-export const project = () => (
-  gulp.src(paths[`${ENV}Project`])
-    .pipe(rename((path) => (path.extname = '.json')))
+    .pipe(rename((path) => (path.extname='.js')))
     .pipe(gulp.dest(buildPath))
 )
 
 export const copy = () => (
   gulp
     .src(paths.copySrc)
+    .pipe(rename((path) => {
+      if(path.basename.includes('project.config')){
+        path.basename='project.config'
+      }
+    }))
     .pipe(gulp.dest(buildPath))
 )
 
@@ -85,20 +98,19 @@ export const watch = () => {
   gulp.watch(paths.jsSrc, js)
   gulp.watch(paths.cssSrc, style)
   gulp.watch(paths.copySrc, copy)
-  gulp.watch(paths[`${ENV}Project`], project)
 }
 
-export default gulp.series(clean, gulp.parallel(copy, style, js, wxml, project), () => {
+export default gulp.series(clean, gulp.parallel(copy, style, js, wxml), () => {
   watch()
   console.log(chalk.green.bold('✔ ✔ ✔ 已准备就绪~~~'))
 })
 
-export const build = gulp.series(clean, gulp.parallel(copy, style, js, wxml, project), done => {
+export const build = gulp.series(clean, gulp.parallel(copy, style, js, wxml), done => {
   done()
   console.log(chalk.green.bold('✔ ✔ ✔ 正式环境已重构完成!!!'))
 })
 
-export const test = gulp.series(clean, gulp.parallel(copy, style, js, wxml, project), done => {
+export const test = gulp.series(clean, gulp.parallel(copy, style, js, wxml), done => {
   done()
   console.log(chalk.green.bold('✔ ✔ ✔ 测试环境已重构完成!!!'))
 })

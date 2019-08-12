@@ -27,14 +27,14 @@ module.exports=class Creator {
     return filepath
   }
 
-  template (template,source, dest, data, options) {
+  template (source, dest, data, options) {
       if (typeof dest !== 'string') {
           options = data
           data = dest
           dest = source
         }
     this.fs.copyTpl(
-      this.templatePath(template, source),
+      this.templatePath(source),
       this.destinationPath(dest),
       Object.assign({}, this.conf, data),
       options

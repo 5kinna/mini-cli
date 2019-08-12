@@ -2,7 +2,6 @@ const fs = require('fs-extra')
 const path = require('path')
 const chalk = require('chalk')
 const { exec } = require('child_process')
-const ora = require('ora')
 
 module.exports = function(creater, params, cb) {
   const {
@@ -16,9 +15,7 @@ module.exports = function(creater, params, cb) {
   } = params
 
   const projectPath = path.join(projectDir, projectName)
-  const sourceDir = path.join(projectPath, 'miniprogram', src)
-
-  const template = 'typescript'
+  const sourceDir = path.join(projectPath, src)
 
   let appCSSName
   let pageCSSName
@@ -29,10 +26,14 @@ module.exports = function(creater, params, cb) {
     none: 'css'
   }
   const currentStyleExt = styleExtMap[css] || 'css'
+  const suffix = '.js'//typescript?'.ts':'.js'
 
   fs.ensureDirSync(projectPath)
   fs.ensureDirSync(sourceDir)
-  fs.ensureDirSync(path.join(sourceDir, 'typings'))
+  fs.ensureDirSync(path.join(sourceDir, 'pages'))
+  fs.ensureDirSync(path.join(sourceDir, 'images'))
+  fs.ensureDirSync(path.join(sourceDir, 'utils'))
+  fs.ensureDirSync(path.join(sourceDir, css || 'css'))
 
   switch (css) {
     case 'sass':
@@ -53,33 +54,45 @@ module.exports = function(creater, params, cb) {
       break
   }
 
-  creater.template(template, 'style', path.join(sourceDir, appCSSName))
+  creater.template('style', path.join(sourceDir, appCSSName))
   creater.template(
-    template,
     'style',
     path.join(sourceDir, 'pages', 'index', pageCSSName)
   )
 
-  creater.template(template, 'appjs', path.join(sourceDir, 'app.ts'))
+  creater.template('appjs', path.join(sourceDir, `app${suffix}`))
   creater.template(
-    template,
+    'runtimejs',
+    path.join(sourceDir, 'utils', 'runtime.js')
+  )
+  creater.template(
     'projectjs',
-    path.join(projectPath, 'project.config.json'),
+    path.join(sourceDir, 'test.project.config.json'),
     {
-      projectName,
+      projectName:`${projectName}-test`,
       appId
     }
   )
-  creater.template(template, 'json', path.join(sourceDir, 'app.json'), {
+  creater.template(
+    'projectjs',
+    path.join(sourceDir, 'prod.project.config.json'),
+    {
+      projectName:`${projectName}-prod`,
+      appId
+    }
+  )
+  creater.template(
+    'preprocessconfig',
+    path.join(projectPath, `preprocess.config.js`)
+  )
+  creater.template('appjson', path.join(sourceDir, 'app.json'), {
     projectName
   })
   creater.template(
-    template,
     'pagejs',
-    path.join(sourceDir, 'pages', 'index', 'index.ts')
+    path.join(sourceDir, 'pages', 'index', `index${suffix}`)
   )
   creater.template(
-    template,
     'json',
     path.join(sourceDir, 'pages', 'index', 'index.json'),
     {
@@ -87,22 +100,45 @@ module.exports = function(creater, params, cb) {
     }
   )
   creater.template(
-    template,
     'wxml',
     path.join(sourceDir, 'pages', 'index', 'index.wxml')
   )
+
+  creater.template('nvmrc', path.join(projectPath, '.nvmrc'))
+  creater.template('postcssconfig', path.join(projectPath, `postcss.config.js`))
+  creater.template('babelrc', path.join(projectPath, '.babelrc'))
   creater.template(
-    template,
     'packagejson',
-    path.join(projectPath, 'package.json')
+    path.join(projectPath, 'package.json'),
+    {
+      description,
+      projectName
+    }
   )
-  creater.template(template, 'typings', path.join(projectPath, 'typings'))
+  creater.template(
+    'gulpfile',
+    path.join(projectPath, 'gulpfile.babel.js'),
+    {
+      css,
+      typescript:false
+    }
+  )
+  creater.template(
+    'configjs',
+    path.join(projectPath, 'config.js'),
+    {
+      css:currentStyleExt,
+      suffix
+    }
+  )
+  // if(typescript){
+  //   creater.template('typings', path.join(sourceDir, 'typings'))
+  //   creater.template('tsconfig', path.join(sourceDir, 'tsconfig.json'))
+  // }
 
   creater.fs.commit(() => {
-    const chalkPath = typescript
-      ? `${projectName}/miniprogram/${src}`
-      : `${projectName}/${src}`
-    console.log()
+    const chalkPath = `${projectName}/${src}`
+
     console.log(
       `${chalk.green('✔ ')}${chalk.grey(
         `创建项目: ${chalk.grey.bold(projectName)}`
@@ -114,10 +150,9 @@ module.exports = function(creater, params, cb) {
     console.log(
       `${chalk.green('✔ ')}${chalk.grey(`创建页面目录: ${chalkPath}/pages`)}`
     )
-
     console.log(
       `${chalk.green('✔ ')}${chalk.grey(
-        `创建页面 JS 文件: ${chalkPath}/pages/index/index.ts`
+        `创建页面 JS 文件: ${chalkPath}/pages/index/index.js`
       )}`
     )
     console.log(
@@ -132,12 +167,11 @@ module.exports = function(creater, params, cb) {
     )
     console.log(
       `${chalk.green('✔ ')}${chalk.grey(
-        `创建页面 ${currentStyleExt.toLocaleUpperCase()} 文件: ${chalkPath}/pages/index/${pageCSSName}`
+        `创建页面 ${currentStyleExt.toLocaleUpperCase()} 文件: ${projectName}/${src}/pages/index/${pageCSSName}`
       )}`
     )
-
     console.log(
-      `${chalk.green('✔ ')}${chalk.grey(`创建文件: ${chalkPath}/app.ts`)}`
+      `${chalk.green('✔ ')}${chalk.grey(`创建文件: ${chalkPath}/app.js`)}`
     )
     console.log(
       `${chalk.green('✔ ')}${chalk.grey(
@@ -149,44 +183,21 @@ module.exports = function(creater, params, cb) {
     )
     console.log(
       `${chalk.green('✔ ')}${chalk.grey(
-        `创建文件: ${projectName}/project.config.json`
+        `创建文件: ${chalkPath}/project.config.json`
       )}`
     )
-    console.log(
-      `${chalk.green('✔ ')}${chalk.grey(
-        `创建文件: ${projectName}/package.json`
-      )}`
-    )
-    console.log(
-      `${chalk.green('✔ ')}${chalk.grey(`创建目录: ${projectName}/typings`)}`
-    )
+    console.log(`${chalk.green('✔ ')}${chalk.grey(`创建其他配置文件`)}`)
 
-    // install
-    const command = 'npm install'
-    const installSpinner = ora(
-      `执行安装项目依赖 ${chalk.cyan.bold(command)}, 需要一会儿...`
-    ).start()
-    exec(command, (error, stdout, stderr) => {
-      if (error) {
-        installSpinner.color = 'red'
-        installSpinner.fail(chalk.red('安装项目依赖失败，请自行重新安装！'))
-        console.log(error)
-      } else {
-        installSpinner.color = 'green'
-        installSpinner.succeed('安装成功')
-        console.log(`${stderr}${stdout}`)
-      }
-      console.log(
-        chalk.green(`创建项目 ${chalk.green.bold(projectName)} 成功！`)
-      )
-      console.log(
-        chalk.green(
-          `请进入项目目录 ${chalk.green.bold(projectName)} 开始工作吧！😝`
-        )
-      )
-      if (typeof cb === 'function') {
-        cb()
-      }
-    })
+    console.log(
+      chalk.green(`✔ 创建项目 ${chalk.green.bold(projectName)} 成功！`)
+    )
+    console.log()
+    console.log(chalk.green(`请进入项目目录 ${chalk.green.bold(projectName)} `))
+    console.log(chalk.green(`安装依赖，可执行命令 npm i`))
+    console.log(chalk.green(`开始工作吧！😝`))
+
+    if (typeof cb === 'function') {
+      cb()
+    }
   })
 }

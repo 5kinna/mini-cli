@@ -2,7 +2,7 @@
 
 const program = require('commander')
 
-const Project = require('../src/project').default
+const Project = require('./src/project.js')
 
 program
   .option('--name [name]', '项目名称')
@@ -14,7 +14,7 @@ program
   .parse(process.argv)
 
 const args = program.args
-const { description,appId, name, css } = program
+const { description, appId,name, css } = program
 let typescript
 
 /**
@@ -33,8 +33,8 @@ const project = new Project({
   projectName,
   description,
   typescript,
-  css,
-  appId
+  appId,
+  css
 })
 
 project.create()
