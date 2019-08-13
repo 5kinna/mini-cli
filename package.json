@@ -1,11 +1,12 @@
 {
-  "name": "mini-cli",
+  "name": "@mini/cli",
   "version": "1.0.0",
-  "main": "index.js",
   "license": "MIT",
   "bin": {
-    "mini": "./bin/mini"
+    "create": "./bin/mini-init"
   },
+  "preferGlobal": true,
+  "author": "5kinna <https://github.com/5kinna>",
   "dependencies": {
     "chalk": "^2.4.2",
     "commander": "^2.20.0",

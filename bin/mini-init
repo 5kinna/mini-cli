@@ -2,7 +2,7 @@
 
 const program = require('commander')
 
-const Project = require('./src/project.js')
+const Project = require('../src/project.js')
 
 program
   .option('--name [name]', '项目名称')

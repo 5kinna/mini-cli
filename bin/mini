@@ -1,9 +1,0 @@
-#! /usr/bin/env node
-// 头部添加显示声明：本文件用node来执行
-
-const program = require('commander')
-
-program.version('1.0.0', '-v, --version')
-  .usage('<command> [options]')
-  .command('init <name>','创建新项目')
-  .parse(process.argv)
