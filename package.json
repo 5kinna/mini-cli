@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "license": "MIT",
   "bin": {
-    "create": "./bin/mini-init"
+    "mini": "./bin/mini"
   },
   "preferGlobal": true,
   "author": "5kinna <https://github.com/5kinna>",
