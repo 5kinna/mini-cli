@@ -1,7 +1,6 @@
 const fs = require('fs-extra')
 const path = require('path')
 const chalk = require('chalk')
-const { exec } = require('child_process')
 
 module.exports = function(creater, params, cb) {
   const {
@@ -187,14 +186,12 @@ module.exports = function(creater, params, cb) {
       )}`
     )
     console.log(`${chalk.green('✔ ')}${chalk.grey(`创建其他配置文件`)}`)
-
-    console.log(
-      chalk.green(`✔ 创建项目 ${chalk.green.bold(projectName)} 成功！`)
-    )
     console.log()
-    console.log(chalk.green(`请进入项目目录 ${chalk.green.bold(projectName)} `))
-    console.log(chalk.green(`安装依赖，可执行命令 npm i`))
-    console.log(chalk.green(`开始工作吧！😝`))
+    console.log(chalk.green(`创建项目 ${chalk.green.bold(projectName)} 成功！`))
+    console.log(chalk.green(`进入项目目录 cd ${chalk.green.bold(projectName)} `))
+    console.log(chalk.green(`安装项目依赖 npm i `))
+    console.log(chalk.green(`执行npm run dev，使用开发者工具打开/example测试项目目录`))
+    console.log(chalk.green(`开始工作吧`))
 
     if (typeof cb === 'function') {
       cb()

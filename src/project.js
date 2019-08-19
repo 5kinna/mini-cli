@@ -22,7 +22,7 @@ module.exports=class Project extends Creator{
   }
 
   init () {
-    console.log(chalk.green(`即将创建一个新项目!`))
+    console.log(chalk.green(`即将创建...`))
     console.log()
   }
 
@@ -116,9 +116,9 @@ module.exports=class Project extends Creator{
 
     return inquirer.prompt(prompts)
   }
-  writeTemplate(cb=()=>{}){
+  writeTemplate(fileName='init', cb=()=>{}){
     this.conf.src = 'src'
-    const templateCreate = require(path.join(this.templatePath(), 'index.js'))
+    const templateCreate = require(path.join(this.conf.projectDir, 'script', `${fileName}.js`))
     templateCreate(this, this.conf, cb)
   }
 }

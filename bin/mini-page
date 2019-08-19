@@ -1,0 +1,17 @@
+#!/usr/bin/env node
+
+const program = require('commander')
+
+const Project = require('../src/project.js')
+
+program
+  .option('-p,--page [page]', '页面路径')
+  .parse(process.argv)
+
+const { page } = program
+
+const project = new Project({
+  page
+})
+
+project.writeTemplate('page')
