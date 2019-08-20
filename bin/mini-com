@@ -3,10 +3,9 @@
 const program = require('commander')
 
 const Project = require('../src/project.js')
-
 program
-  .arguments('<page>')
-  .action((page) => {
-    new Project({page}).writeTemplate('page')
+  .arguments('<component>')
+  .action((component) => {
+    new Project({component}).writeTemplate('component')
   })
   .parse(process.argv)

@@ -5,6 +5,7 @@ program
   .usage('<command> [options]')
   .command('init [projectName]', 'Init a project with default templete')
   .command('page', 'Create page for project')
-  .command('component', 'Create component for project')
+  .command('com', 'Create component for project')
+  .command('rm', 'Delete page from project')
   .command('update', 'Update packages')
   .parse(process.argv)

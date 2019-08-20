@@ -6,52 +6,25 @@ module.exports = function(creater, params, cb) {
   const {
     projectName,
     projectDir,
-    description,
-    typescript,
+    libDir,
     src,
-    css,
     appId
   } = params
 
   const projectPath = path.join(projectDir, projectName)
   const sourceDir = path.join(projectPath, src)
 
-  let appCSSName
-  let pageCSSName
-  const styleExtMap = {
-    sass: 'scss',
-    less: 'less',
-    stylus: 'styl',
-    none: 'css'
-  }
-  const currentStyleExt = styleExtMap[css] || 'css'
-  const suffix = '.js'//typescript?'.ts':'.js'
+  const appCSSName = 'app.scss'
+  const pageCSSName = 'index.scss'
+  const currentStyleExt = 'scss'
+  const suffix = '.js'
 
   fs.ensureDirSync(projectPath)
   fs.ensureDirSync(sourceDir)
   fs.ensureDirSync(path.join(sourceDir, 'pages'))
   fs.ensureDirSync(path.join(sourceDir, 'images'))
   fs.ensureDirSync(path.join(sourceDir, 'utils'))
-  fs.ensureDirSync(path.join(sourceDir, css || 'css'))
-
-  switch (css) {
-    case 'sass':
-      appCSSName = 'app.scss'
-      pageCSSName = 'index.scss'
-      break
-    case 'less':
-      appCSSName = 'app.less'
-      pageCSSName = 'index.less'
-      break
-    case 'stylus':
-      appCSSName = 'app.styl'
-      pageCSSName = 'index.styl'
-      break
-    default:
-      appCSSName = 'app.css'
-      pageCSSName = 'index.css'
-      break
-  }
+  fs.ensureDirSync(path.join(sourceDir, 'scss'))
 
   creater.template('style', path.join(sourceDir, appCSSName))
   creater.template(
@@ -116,11 +89,7 @@ module.exports = function(creater, params, cb) {
   )
   creater.template(
     'gulpfile',
-    path.join(projectPath, 'gulpfile.babel.js'),
-    {
-      css,
-      typescript:false
-    }
+    path.join(projectPath, 'gulpfile.babel.js')
   )
   creater.template(
     'configjs',
@@ -130,10 +99,6 @@ module.exports = function(creater, params, cb) {
       suffix
     }
   )
-  // if(typescript){
-  //   creater.template('typings', path.join(sourceDir, 'typings'))
-  //   creater.template('tsconfig', path.join(sourceDir, 'tsconfig.json'))
-  // }
 
   creater.fs.commit(() => {
     const chalkPath = `${projectName}/${src}`

@@ -6,5 +6,5 @@ module.exports = {
     wxmlSrc: `src/**/*.wxml`,
     cssSrc: `src/**/*.<%=css%>`,
     jsSrc: `src/**/*<%=suffix%>`,
-    copySrc: ['src/**', '!src/**/*.wxml', '!src/**/*.js', '!src/**/*.<%=css%>', '!src/project.config.*','!typings/**']
+    copySrc: ['src/**', '!src/**/*.wxml', '!src/**/*.js', '!src/**/*.<%=css%>', '!src/project.config.*']
 }

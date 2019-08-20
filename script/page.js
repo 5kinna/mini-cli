@@ -4,62 +4,77 @@ const chalk = require('chalk')
 
 module.exports = function(creater, params, cb) {
   const {
-    projectName,
     projectDir,
     page,
     src
   } = params
 
-  const projectPath = path.join(projectDir, projectName)
-  const sourceDir = path.join(projectPath, src)
+  const sourceDir = path.join(projectDir, src)
+  
+  let [pageName, subPageName] = page.replace(/^\/|\/$/g, '').split('/')
+  if(!subPageName){
+    subPageName = pageName
+    pageName='pages'
+  }
+  if(fs.existsSync(`/${projectDir}/${src}/${pageName}/${subPageName}`))return console.log(chalk.red(`✘ 页面目录${page}已存在`))
 
-  const [pageName, subPageName] = page.replace(/^\/|\/$/g, '').split('/')
-
-  fs.ensureDirSync(projectPath)
   fs.ensureDirSync(sourceDir)
-  fs.ensureDirSync(path.join(sourceDir, 'pages'))
+  fs.ensureDirSync(path.join(sourceDir, pageName))
 
   creater.template(
     'style',
-    path.join(sourceDir, 'pages', pageName, 'index.scss')
+    path.join(sourceDir, pageName,subPageName, 'index.scss')
   )
   creater.template(
     'pagejs',
-    path.join(sourceDir, 'pages', pageName, `index.js`)
+    path.join(sourceDir, pageName,subPageName, `index.js`)
   )
   creater.template(
     'json',
-    path.join(sourceDir, 'pages', pageName, 'index.json'),
-    {
-      projectName
-    }
+    path.join(sourceDir, pageName,subPageName, 'index.json')
   )
   creater.template(
     'wxml',
-    path.join(sourceDir, 'pages', pageName, 'index.wxml')
+    path.join(sourceDir, pageName, subPageName,'index.wxml')
   )
 
   creater.fs.commit(() => {
-    const chalkPath = `${projectName}/${src}`
+    const chalkPath = `/${src}/${pageName}/${subPageName}`
     console.log(
       `${chalk.green('✔ ')}${chalk.grey(
-        `创建页面 JS 文件: ${chalkPath}/pages/${pageName}/index.js`
+        `创建页面 SCSS 文件: ${chalkPath}/index.scss`
       )}`
     )
     console.log(
       `${chalk.green('✔ ')}${chalk.grey(
-        `创建页面 JSON 文件: ${chalkPath}/pages/${pageName}/index.json`
+        `创建页面 JS 文件: ${chalkPath}/index.js`
       )}`
     )
     console.log(
       `${chalk.green('✔ ')}${chalk.grey(
-        `创建页面 WXML 文件: ${chalkPath}/pages/${pageName}/index.wxml`
+        `创建页面 JSON 文件: ${chalkPath}/index.json`
+      )}`
+    )
+    console.log(
+      `${chalk.green('✔ ')}${chalk.grey(
+        `创建页面 WXML 文件: ${chalkPath}/index.wxml`
       )}`
     )
 
     console.log(
-      chalk.green(`✔ 创建项目目录 ${chalkPath}/pages/${pageName} 成功！`)
+      chalk.green(`✔ 创建页面目录 ${chalkPath} 成功！`)
     )
     console.log()
   })
+
+  if(pageName!=='pages'){
+    try {
+      creater.writeSubpackages(subPageName, pageName)
+      console.log(
+        chalk.green(`✔ 页面配置成功`)
+      )
+    }catch (err) {
+      console.log(chalk.red(`✘ 页面配置失败，请手动添加`))
+    }
+  }
 }

@@ -16,13 +16,14 @@ module.exports=class Project extends Creator{
     this.conf = Object.assign({
       projectName: '',
       projectDir: process.cwd(),
-      description: '',
-      appId:''
+      libDir:path.resolve(__dirname,'../'),
+      appId:'',
+      src:'src'
     }, options)
   }
 
   init () {
-    console.log(chalk.green(`即将创建...`))
+    console.log(chalk.green(`即将开始...`))
     console.log()
   }
 
@@ -66,14 +67,6 @@ module.exports=class Project extends Creator{
         }
       })
     }
-
-    if (typeof conf.description !== 'string') {
-      prompts.push({
-        type: 'input',
-        name: 'description',
-        message: '请输入项目介绍！'
-      })
-    }
     
     if (typeof conf.appId !== 'string') {
       prompts.push({
@@ -83,42 +76,14 @@ module.exports=class Project extends Creator{
       })
     }
 
-    if (typeof conf.typescript !== 'boolean') {
-      prompts.push({
-        type: 'confirm',
-        name: 'typescript',
-        message: '是否需要使用 TypeScript ？（目前暂不支持typescript）'
-      })
-    }
-
-    const cssChoices = [{
-      name: 'Sass/Scss',
-      value: 'sass'
-    }, {
-      name: 'Less',
-      value: 'less'
-    }, {
-      name: 'Stylus',
-      value: 'stylus'
-    }, {
-      name: '无',
-      value: 'none'
-    }]
-
-    if (typeof conf.css !== 'string') {
-      prompts.push({
-        type: 'list',
-        name: 'css',
-        message: '请选择 CSS 预处理器（Sass/Less/Stylus）',
-        choices: cssChoices
-      })
-    }
-
     return inquirer.prompt(prompts)
   }
   writeTemplate(fileName='init', cb=()=>{}){
-    this.conf.src = 'src'
-    const templateCreate = require(path.join(this.conf.projectDir, 'script', `${fileName}.js`))
+    const templateCreate = require(path.join(this.conf.libDir, 'script', `${fileName}.js`))
     templateCreate(this, this.conf, cb)
+  }
+  delete(cb=()=>{}){
+    const pageDelete = require(path.join(this.conf.libDir, 'script', `delete.js`))
+    pageDelete(this, this.conf, cb)
   }
 }

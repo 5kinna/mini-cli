@@ -7,6 +7,6 @@ const Project = require('../src/project.js')
 program
   .arguments('<page>')
   .action((page) => {
-    new Project({page}).writeTemplate('page')
+    new Project({page}).delete()
   })
   .parse(process.argv)

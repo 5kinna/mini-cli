@@ -2,7 +2,7 @@ import gulp from 'gulp'
 import path from 'path'
 import babel from 'gulp-babel'
 import uglify from 'gulp-uglify-es'
-import <%=css%> from 'gulp-<%=css%>'
+import sass from 'gulp-sass'
 import cleanCSS from 'gulp-clean-css'
 import rename from 'gulp-rename'
 import postcss from 'gulp-postcss'
@@ -11,9 +11,6 @@ import gulpif from 'gulp-if'
 import chalk from 'chalk'
 import htmlmin from 'gulp-htmlmin'
 import preprocess from 'gulp-preprocess'
-<% if (typescript) { %>
-import ts from 'gulp-typescript'
-<% } %>
 
 import paths from './config.js'
 import context from './preprocess.config'
@@ -49,7 +46,7 @@ export const wxml = () => (
 export const style = () => (
   gulp
     .src(paths.cssSrc)
-    .pipe(gulpif('<%=css%>'!=='css', <%=css%>()))
+    .pipe(sass())
     .pipe(postcss())
     .pipe(cleanCSS({ format }))
     .pipe(rename((path) => (path.extname = '.wxss')))
@@ -59,12 +56,6 @@ export const style = () => (
 export const js = () => (
   gulp.src(paths.jsSrc)
     .pipe(preprocess())
-    .pipe(
-      gulpif(<%=typescript%>,ts({
-            noImplicitAny: true,
-            outFile: 'output.js'
-        }))
-    )
     .pipe(babel())
     .pipe(
       gulpif(
