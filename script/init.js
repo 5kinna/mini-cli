@@ -62,7 +62,10 @@ module.exports = function(creater, params, cb) {
   })
   creater.template(
     'pagejs',
-    path.join(sourceDir, 'pages', 'index', `index${suffix}`)
+    path.join(sourceDir, 'pages', 'index', `index${suffix}`),
+    {
+      name:'Page'
+    }
   )
   creater.template(
     'json',
@@ -83,7 +86,6 @@ module.exports = function(creater, params, cb) {
     'packagejson',
     path.join(projectPath, 'package.json'),
     {
-      description,
       projectName
     }
   )

@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "src/app.js",
   "author": "",
-  "description":"<%= description %>",
+  "description":"",
   "license": "MIT",
   "scripts": {
     "dev": "cross-env NODE_ENV=dev gulp",

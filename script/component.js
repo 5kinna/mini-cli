@@ -22,7 +22,10 @@ module.exports = function(creater, params, cb) {
   )
   creater.template(
     'pagejs',
-    path.join(sourceDir, component, `index.js`)
+    path.join(sourceDir, component, `index.js`),
+    {
+      name:'Component'
+    }
   )
   creater.template(
     'json',

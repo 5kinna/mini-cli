@@ -73,6 +73,14 @@ module.exports=class Creator {
     await fs.writeJSON(this.appPath(), appJson)
   }
 
+  async writePagepackages(subPageName){
+    const appJson = await fs.readJson(this.appPath())
+    if(!appJson.pages)appJson.pages = []
+    const pagePath = `pages/${subPageName}/index`
+    if(!appJson.pages.includes(pagePath))appJson.pages.push(pagePath)
+    await fs.writeJSON(this.appPath(), appJson)
+  }
+
   async removeSubpackages(subPageName, pageName, isAll=false){
     const appJson = await fs.readJson(this.appPath())
 
@@ -82,11 +90,23 @@ module.exports=class Creator {
     if(isAll)appJson.subpackages.splice(pageSubPacksIndex,1)
     else {
       const pages = appJson.subpackages[pageSubPacksIndex].pages
-      const pageIndex = pages.findIndex(page=>page.includes(subPageName))
-      if(pageIndex<0)return
-      pages.splice(pageIndex,1)
+      const pageIndex = pages.findIndex(page=>page.includes(`${subPageName}/index`))
+      if(pageIndex>=0)pages.splice(pageIndex,1)
     }
     
+    await fs.writeJSON(this.appPath(), appJson)
+  }
+
+  async removePagePackages(subPageName){
+    const appJson = await fs.readJson(this.appPath())
+
+    if(!subPageName)delete appJson.pages
+    else {
+      const index = appJson.pages.findIndex(item=>item.includes(`${subPageName}/index`))
+      if(index < 0)return
+      appJson.pages.splice(index,1)
+    }
+
     await fs.writeJSON(this.appPath(), appJson)
   }
 }

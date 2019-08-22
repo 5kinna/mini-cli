@@ -16,8 +16,9 @@ module.exports = async function (creater, params, cb) {
   try {
     await fs.remove(`${pagePath}`)
     console.log(chalk.green(`✔ 页面目录${page}删除成功`))
-
-    if(subPageName && !fs.readdirSync(pageDir).length || !subPageName){
+    if(pageName === 'pages'){
+      creater.removePagePackages(subPageName)
+    }else if(subPageName && !fs.readdirSync(pageDir).length || !subPageName){
         await fs.remove(pageDir)
 
         console.log(chalk.green(`✔ 页面目录${pageName}删除成功`))

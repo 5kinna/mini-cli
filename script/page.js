@@ -27,7 +27,10 @@ module.exports = function(creater, params, cb) {
   )
   creater.template(
     'pagejs',
-    path.join(sourceDir, pageName,subPageName, `index.js`)
+    path.join(sourceDir, pageName,subPageName, `index.js`),
+    {
+      name:'Page'
+    }
   )
   creater.template(
     'json',
@@ -70,6 +73,15 @@ module.exports = function(creater, params, cb) {
   if(pageName!=='pages'){
     try {
       creater.writeSubpackages(subPageName, pageName)
+      console.log(
+        chalk.green(`✔ 页面配置成功`)
+      )
+    }catch (err) {
+      console.log(chalk.red(`✘ 页面配置失败，请手动添加`))
+    }
+  } else {
+    try {
+      creater.writePagepackages(subPageName)
       console.log(
         chalk.green(`✔ 页面配置成功`)
       )
