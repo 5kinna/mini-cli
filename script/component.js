@@ -29,7 +29,10 @@ module.exports = function(creater, params, cb) {
   )
   creater.template(
     'json',
-    path.join(sourceDir, component, 'index.json')
+    path.join(sourceDir, component, 'index.json'),
+    {
+      component:true
+    }
   )
   creater.template(
     'wxml',

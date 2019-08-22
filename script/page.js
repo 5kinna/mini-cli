@@ -34,7 +34,9 @@ module.exports = function(creater, params, cb) {
   )
   creater.template(
     'json',
-    path.join(sourceDir, pageName,subPageName, 'index.json')
+    path.join(sourceDir, pageName,subPageName, 'index.json'),{
+      component:false
+    }
   )
   creater.template(
     'wxml',

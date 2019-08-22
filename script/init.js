@@ -71,7 +71,8 @@ module.exports = function(creater, params, cb) {
     'json',
     path.join(sourceDir, 'pages', 'index', 'index.json'),
     {
-      projectName
+      projectName,
+      company:false
     }
   )
   creater.template(
