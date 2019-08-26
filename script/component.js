@@ -9,7 +9,12 @@ module.exports = function(creater, params, cb) {
     src
   } = params
 
-  const sourceDir = path.join(projectDir, src ,'component')
+  const {
+    css,
+    comSrc
+  } = creater.getConfigJson()
+
+  const sourceDir = comSrc===undefined ? path.join(projectDir, src ,'component') : comSrc
   
   if(fs.existsSync(`/${sourceDir}/${component}`))return console.log(chalk.red(`✘ 组件目录${page}已存在`))
 
@@ -18,7 +23,7 @@ module.exports = function(creater, params, cb) {
 
   creater.template(
     'style',
-    path.join(sourceDir, component, 'index.scss')
+    path.join(sourceDir, component, `index.${css}`)
   )
   creater.template(
     'pagejs',
@@ -43,7 +48,7 @@ module.exports = function(creater, params, cb) {
     const chalkPath = `/${src}/component/${component}`
     console.log(
       `${chalk.green('✔ ')}${chalk.grey(
-        `创建页面 SCSS 文件: ${chalkPath}/index.scss`
+        `创建页面 SCSS 文件: ${chalkPath}/index.${css}`
       )}`
     )
     console.log(

@@ -9,21 +9,26 @@ module.exports = function(creater, params, cb) {
     src
   } = params
 
-  const sourceDir = path.join(projectDir, src)
+  const {
+    css,
+    pageSrc
+  } = creater.getConfigJson()
+
+  const sourceDir = pageSrc===undefined ? path.join(projectDir, src) : pageSrc
   
   let [pageName, subPageName] = page.replace(/^\/|\/$/g, '').split('/')
   if(!subPageName){
     subPageName = pageName
     pageName='pages'
   }
-  if(fs.existsSync(`/${projectDir}/${src}/${pageName}/${subPageName}`))return console.log(chalk.red(`✘ 页面目录${page}已存在`))
+  if(fs.existsSync(`/${sourceDir}/${pageName}/${subPageName}`))return console.log(chalk.red(`✘ 页面目录${page}已存在`))
 
   fs.ensureDirSync(sourceDir)
   fs.ensureDirSync(path.join(sourceDir, pageName))
 
   creater.template(
     'style',
-    path.join(sourceDir, pageName,subPageName, 'index.scss')
+    path.join(sourceDir, pageName,subPageName, `index.${css}`)
   )
   creater.template(
     'pagejs',
@@ -47,7 +52,7 @@ module.exports = function(creater, params, cb) {
     const chalkPath = `/${src}/${pageName}/${subPageName}`
     console.log(
       `${chalk.green('✔ ')}${chalk.grey(
-        `创建页面 SCSS 文件: ${chalkPath}/index.scss`
+        `创建页面 SCSS 文件: ${chalkPath}/index.${css}`
       )}`
     )
     console.log(

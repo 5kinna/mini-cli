@@ -76,7 +76,34 @@ module.exports=class Project extends Creator{
       })
     }
 
+    const cssChoices = [{
+      name: 'Sass/Scss',
+      value: 'sass'
+    }, {
+      name: 'Less',
+      value: 'less'
+    }, {
+      name: 'Stylus',
+      value: 'stylus'
+    }, {
+      name: '无',
+      value: 'none'
+    }]
+
+    if (typeof conf.css !== 'string') {
+      prompts.push({
+        type: 'list',
+        name: 'css',
+        message: '请选择 CSS 预处理器（Sass/Less/Stylus）',
+        choices: cssChoices
+      })
+    }
+
     return inquirer.prompt(prompts)
+  }
+  getConfigJson(){
+    const appJson = fs.readJsonSync(path.join(this.conf.projectDir,'mini.config.json'))
+    return {css:'css',...appJson}
   }
   writeTemplate(fileName='init', cb=()=>{}){
     const templateCreate = require(path.join(this.conf.libDir, 'script', `${fileName}.js`))

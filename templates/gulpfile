@@ -2,7 +2,7 @@ import gulp from 'gulp'
 import path from 'path'
 import babel from 'gulp-babel'
 import uglify from 'gulp-uglify-es'
-import sass from 'gulp-sass'
+import <%=css%> from 'gulp-<%=css%>'
 import cleanCSS from 'gulp-clean-css'
 import rename from 'gulp-rename'
 import postcss from 'gulp-postcss'
@@ -46,7 +46,7 @@ export const wxml = () => (
 export const style = () => (
   gulp
     .src(paths.cssSrc)
-    .pipe(sass())
+    .pipe(gulpif('<%=css%>'!=='css', <%=css%>()))
     .pipe(postcss())
     .pipe(cleanCSS({ format }))
     .pipe(rename((path) => (path.extname = '.wxss')))

@@ -8,23 +8,58 @@ module.exports = function(creater, params, cb) {
     projectDir,
     libDir,
     src,
+    css,
     appId
   } = params
 
   const projectPath = path.join(projectDir, projectName)
   const sourceDir = path.join(projectPath, src)
 
-  const appCSSName = 'app.scss'
-  const pageCSSName = 'index.scss'
-  const currentStyleExt = 'scss'
+  let appCSSName
+  let pageCSSName
+  const styleExtMap = {
+    sass: 'scss',
+    less: 'less',
+    stylus: 'styl',
+    none: 'css'
+  }
+  const currentStyleExt = styleExtMap[css] || 'css'
   const suffix = '.js'
+  const configJson = path.join(projectPath, 'mini.config.json')
+  const appJson = {
+    css:currentStyleExt,
+    pageSrc:sourceDir,
+    comSrc: path.join(sourceDir, 'component')
+  }
 
   fs.ensureDirSync(projectPath)
   fs.ensureDirSync(sourceDir)
+
+  fs.writeJSON(configJson, appJson)
+
   fs.ensureDirSync(path.join(sourceDir, 'pages'))
   fs.ensureDirSync(path.join(sourceDir, 'images'))
   fs.ensureDirSync(path.join(sourceDir, 'utils'))
-  fs.ensureDirSync(path.join(sourceDir, 'scss'))
+  fs.ensureDirSync(path.join(sourceDir, currentStyleExt))
+
+  switch (css) {
+    case 'sass':
+      appCSSName = 'app.scss'
+      pageCSSName = 'index.scss'
+      break
+    case 'less':
+      appCSSName = 'app.less'
+      pageCSSName = 'index.less'
+      break
+    case 'stylus':
+      appCSSName = 'app.styl'
+      pageCSSName = 'index.styl'
+      break
+    default:
+      appCSSName = 'app.css'
+      pageCSSName = 'index.css'
+      break
+  }
 
   creater.template('style', path.join(sourceDir, appCSSName))
   creater.template(
@@ -72,7 +107,7 @@ module.exports = function(creater, params, cb) {
     path.join(sourceDir, 'pages', 'index', 'index.json'),
     {
       projectName,
-      company:false
+      component:false
     }
   )
   creater.template(
@@ -92,7 +127,10 @@ module.exports = function(creater, params, cb) {
   )
   creater.template(
     'gulpfile',
-    path.join(projectPath, 'gulpfile.babel.js')
+    path.join(projectPath, 'gulpfile.babel.js'),
+    {
+      css
+    }
   )
   creater.template(
     'configjs',
