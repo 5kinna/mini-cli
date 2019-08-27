@@ -11,6 +11,7 @@
 ## 特别说明
 - 脚手架下的css预处理器默认选用scss
 - 脚手架默认选用js，而不使用ts（后续会考虑）
+- 初始化项目后会默认在项目目录下建立mini.config.json文件，用作后续的自定义配置
 ## 安装
 ```bash
 npm i @kinna/wx-mini -g
@@ -86,3 +87,13 @@ npm t
 npm run build
 ```
 > 该环境下会重构项目文件放置到dist目录下
+
+## 配置文件
+可在项目目录下建立mini.config.json文件用作自定义配置文件。
+
+**参数:**
+| 参数 | 说明 | 默认值 |
+| --- | --- | --- |
+|css | 小程序使用的css预处理器|scss|
+|pageSrc | 创建页面时相对于项目的路径 |/src|
+|comSrc | 创建组件时相对于项目的路径 |/src/component|
