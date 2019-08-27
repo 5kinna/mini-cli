@@ -14,7 +14,7 @@ module.exports = function(creater, params, cb) {
     pageSrc
   } = creater.getConfigJson()
 
-  const sourceDir = pageSrc===undefined ? path.join(projectDir, src) : pageSrc
+  const sourceDir = pageSrc===undefined ? path.join(projectDir, src) : path.join(projectDir, pageSrc)
   
   let [pageName, subPageName] = page.replace(/^\/|\/$/g, '').split('/')
   if(!subPageName){
@@ -79,7 +79,7 @@ module.exports = function(creater, params, cb) {
 
   if(pageName!=='pages'){
     try {
-      creater.writeSubpackages(subPageName, pageName)
+      creater.writeSubpackages(pageSrc, subPageName, pageName)
       console.log(
         chalk.green(`✔ 页面配置成功`)
       )
@@ -88,7 +88,7 @@ module.exports = function(creater, params, cb) {
     }
   } else {
     try {
-      creater.writePagepackages(subPageName)
+      creater.writePagepackages(pageSrc, subPageName)
       console.log(
         chalk.green(`✔ 页面配置成功`)
       )

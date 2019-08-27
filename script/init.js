@@ -28,8 +28,8 @@ module.exports = function(creater, params, cb) {
   const configJson = path.join(projectPath, 'mini.config.json')
   const appJson = {
     css:currentStyleExt,
-    pageSrc:sourceDir,
-    comSrc: path.join(sourceDir, 'component')
+    pageSrc:'/src',
+    comSrc: '/src/component'
   }
 
   fs.ensureDirSync(projectPath)

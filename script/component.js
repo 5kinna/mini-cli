@@ -14,7 +14,7 @@ module.exports = function(creater, params, cb) {
     comSrc
   } = creater.getConfigJson()
 
-  const sourceDir = comSrc===undefined ? path.join(projectDir, src ,'component') : comSrc
+  const sourceDir = comSrc===undefined ? path.join(projectDir, src ,'component') : path.join(projectDir, comSrc)
   
   if(fs.existsSync(`/${sourceDir}/${component}`))return console.log(chalk.red(`✘ 组件目录${page}已存在`))
 

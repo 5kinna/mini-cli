@@ -28,12 +28,10 @@ module.exports=class Creator {
     return filepath
   }
 
-  appPath (...args){
-    let filepath = path.join.apply(path, args)
-    if (!path.isAbsolute(filepath)) {
-      filepath = path.join(this.conf.projectDir, this.conf.src, 'app.json')
-    }
-    return filepath
+  appPath (pageSrc){
+    const _path = path.join(this.conf.projectDir, pageSrc, 'app.json')
+    fs.ensureFileSync(_path)
+    return _path
   }
 
   template (source, dest, data, options) {
@@ -53,8 +51,8 @@ module.exports=class Creator {
 
   writeTemplate(){}
 
-  async writeSubpackages(subPageName, pageName='pages'){
-    const appJson = await fs.readJson(this.appPath())
+  async writeSubpackages(pageSrc, subPageName, pageName='pages'){
+    const appJson = await fs.readJson(this.appPath(pageSrc))
 
     if(!appJson.subpackages)appJson.subpackages=[]
     const subpackages = appJson.subpackages
@@ -70,19 +68,19 @@ module.exports=class Creator {
         pages:[`${subPageName}/index`]
       })
     }
-    await fs.writeJSON(this.appPath(), appJson)
+    await fs.writeJSON(this.appPath(pageSrc), appJson)
   }
 
-  async writePagepackages(subPageName){
-    const appJson = await fs.readJson(this.appPath())
+  async writePagepackages(pageSrc, subPageName){
+    const appJson = await fs.readJson(this.appPath(pageSrc))
     if(!appJson.pages)appJson.pages = []
     const pagePath = `pages/${subPageName}/index`
     if(!appJson.pages.includes(pagePath))appJson.pages.push(pagePath)
-    await fs.writeJSON(this.appPath(), appJson)
+    await fs.writeJSON(this.appPath(pageSrc), appJson)
   }
 
-  async removeSubpackages(subPageName, pageName, isAll=false){
-    const appJson = await fs.readJson(this.appPath())
+  async removeSubpackages(pageSrc, subPageName, pageName, isAll=false){
+    const appJson = await fs.readJson(this.appPath(pageSrc))
 
     const subpackages = appJson.subpackages
     const pageSubPacksIndex = subpackages.findIndex(item=>item.root===pageName)
@@ -94,11 +92,11 @@ module.exports=class Creator {
       if(pageIndex>=0)pages.splice(pageIndex,1)
     }
     
-    await fs.writeJSON(this.appPath(), appJson)
+    await fs.writeJSON(this.appPath(pageSrc), appJson)
   }
 
-  async removePagePackages(subPageName){
-    const appJson = await fs.readJson(this.appPath())
+  async removePagePackages(pageSrc, subPageName){
+    const appJson = await fs.readJson(this.appPath(pageSrc))
 
     if(!subPageName)delete appJson.pages
     else {
@@ -107,6 +105,6 @@ module.exports=class Creator {
       appJson.pages.splice(index,1)
     }
 
-    await fs.writeJSON(this.appPath(), appJson)
+    await fs.writeJSON(this.appPath(pageSrc), appJson)
   }
 }
