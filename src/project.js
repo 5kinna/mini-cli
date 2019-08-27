@@ -102,8 +102,11 @@ module.exports=class Project extends Creator{
     return inquirer.prompt(prompts)
   }
   getConfigJson(){
-    const appJson = fs.readJsonSync(path.join(this.conf.projectDir,'mini.config.json'))
-    return {css:'scss',...appJson}
+    if(fs.existsSync(path.join(this.conf.projectDir,'mini.config.json'))){
+      const appJson = fs.readJsonSync(path.join(this.conf.projectDir,'mini.config.json'))
+      return {css:'scss',...appJson}
+    }
+    return {css:'scss',pageSrc:'/src',comSrc:'/src/component'}
   }
   writeTemplate(fileName='init', cb=()=>{}){
     const templateCreate = require(path.join(this.conf.libDir, 'script', `${fileName}.js`))
