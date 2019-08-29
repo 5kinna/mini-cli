@@ -45,7 +45,7 @@ module.exports = function(creater, params, cb) {
   )
 
   creater.fs.commit(() => {
-    const chalkPath = `/${src}/component/${component}`
+    const chalkPath = `/${sourceDir}/${component}`
     console.log(
       `${chalk.green('✔ ')}${chalk.grey(
         `创建页面 SCSS 文件: ${chalkPath}/index.${css}`
