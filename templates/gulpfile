@@ -9,7 +9,6 @@ import postcss from 'gulp-postcss'
 import del from 'del'
 import gulpif from 'gulp-if'
 import chalk from 'chalk'
-import htmlmin from 'gulp-htmlmin'
 import preprocess from 'gulp-preprocess'
 
 import paths from './config.js'
@@ -27,19 +26,6 @@ export const wxml = () => (
   gulp
     .src(paths.wxmlSrc)
     .pipe(preprocess({context:context[ENV]}))
-    .pipe(
-      gulpif(
-        !isDev,
-        htmlmin({
-          collapseWhitespace: true,
-          collapseBooleanAttributes: true,
-          removeComments: true,
-          removeEmptyAttributes: true,
-          removeScriptTypeAttributes: true,
-          removeStyleLinkTypeAttributes: true
-        })
-      )
-    )
     .pipe(gulp.dest(buildPath))
 )
 

@@ -49,7 +49,7 @@ module.exports = function(creater, params, cb) {
   )
 
   creater.fs.commit(() => {
-    const chalkPath = `/${sourceDir}/${pageName}/${subPageName}`
+    const chalkPath = `${sourceDir}/${pageName}/${subPageName}`
     console.log(
       `${chalk.green('✔ ')}${chalk.grey(
         `创建页面 SCSS 文件: ${chalkPath}/index.${css}`
