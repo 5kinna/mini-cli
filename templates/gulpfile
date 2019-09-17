@@ -41,7 +41,7 @@ export const style = () => (
 
 export const js = () => (
   gulp.src(paths.jsSrc)
-    .pipe(preprocess())
+    .pipe(preprocess({context:context[ENV]}))
     .pipe(babel())
     .pipe(
       gulpif(
