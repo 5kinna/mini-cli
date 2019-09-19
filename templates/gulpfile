@@ -1,6 +1,5 @@
 import gulp from 'gulp'
 import path from 'path'
-import babel from 'gulp-babel'
 import uglify from 'gulp-uglify-es'
 import <%=css%> from 'gulp-<%=css%>'
 import cleanCSS from 'gulp-clean-css'
@@ -42,7 +41,6 @@ export const style = () => (
 export const js = () => (
   gulp.src(paths.jsSrc)
     .pipe(preprocess({context:context[ENV]}))
-    .pipe(babel())
     .pipe(
       gulpif(
         !isDev,
