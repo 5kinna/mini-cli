@@ -9,6 +9,7 @@ import del from 'del'
 import gulpif from 'gulp-if'
 import chalk from 'chalk'
 import preprocess from 'gulp-preprocess'
+import changed from 'gulp-changed'
 
 import paths from './config.js'
 import context from './preprocess.config'
@@ -24,6 +25,7 @@ export const clean = () => del([buildPath])
 export const wxml = () => (
   gulp
     .src(paths.wxmlSrc)
+    .pipe(changed(buildPath))
     .pipe(preprocess({context:context[ENV]}))
     .pipe(gulp.dest(buildPath))
 )
@@ -31,6 +33,7 @@ export const wxml = () => (
 export const style = () => (
   gulp
     .src(paths.cssSrc)
+    .pipe(changed(buildPath))
     .pipe(gulpif('<%=css%>'!=='css', <%=css%>()))
     .pipe(postcss())
     .pipe(cleanCSS({ format }))
@@ -40,6 +43,7 @@ export const style = () => (
 
 export const js = () => (
   gulp.src(paths.jsSrc)
+  .pipe(changed(buildPath))
     .pipe(preprocess({context:context[ENV]}))
     .pipe(
       gulpif(
@@ -60,6 +64,7 @@ export const js = () => (
 export const copy = () => (
   gulp
     .src(paths.copySrc)
+    .pipe(changed(buildPath))
     .pipe(rename((path) => {
       if(path.basename.includes('project.config')){
         path.basename='project.config'
