@@ -1,3 +1,6 @@
+const isProd = process.env.NODE_ENV === 'prod'
+const copySrc = ['src/**', '!src/**/*.wxml', '!src/**/*.js', '!src/**/*.scss', '!src/project.config.*']
+copySrc.push(isProd ? '!src/test.project.config.*' : '!src/prod.project.config.*')
 module.exports = {
     devSrc: `example/`,
     devProject: `src/test.project.config.json`,
@@ -6,5 +9,5 @@ module.exports = {
     wxmlSrc: `src/**/*.wxml`,
     cssSrc: `src/**/*.<%=css%>`,
     jsSrc: `src/**/*<%=suffix%>`,
-    copySrc: ['src/**', '!src/**/*.wxml', '!src/**/*.js', '!src/**/*.<%=css%>', '!src/project.config.*']
+    copySrc
 }
